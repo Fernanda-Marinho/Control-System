@@ -3,36 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Curvas Interativas</title>
+    <title>Comparação de curvas</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
-    <h2>Curvas Interativas</h2>
+    <h2>Sistema térmico</h2>
     <div id="graph"></div>
     <input type="range" id="tauchuteSlider" min="2700" max="10000" value="4500" step="100">
-    <p>Valor de TAUCHUTE: <span id="tauchuteValue">4500</span></p>
+    <p>Valor de TAU: <span id="tauchuteValue">4500</span></p>
+    <input type="range" id="kchuteSlider" min="38" max="45" value="38" step="0.1">
+    <p>Valor de K: <span id="kchuteValue">37.0</span></p>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            let slider = document.getElementById('tauchuteSlider');
+            let tauchuteSlider = document.getElementById('tauchuteSlider');
+            let kchuteSlider = document.getElementById('kchuteSlider');
             let tauchuteValue = document.getElementById('tauchuteValue');
+            let kchuteValue = document.getElementById('kchuteValue');
             let graphDiv = document.getElementById('graph');
 
-            function updateGraph(tauchute) {
-                fetch(`/update_graph/${tauchute}`)
+            function updateGraph(tauchute, kchute) {
+                fetch(`/update_graph/${tauchute}/${kchute}`)
                     .then(response => response.json())
                     .then(data => {
                         let graphJSON = JSON.parse(data);
                         Plotly.newPlot(graphDiv, graphJSON.data, graphJSON.layout);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
                     });
             }
 
-            updateGraph(slider.value);
+            updateGraph(tauchuteSlider.value, kchuteSlider.value);
             
-            slider.addEventListener('input', function () {
-                let tauchute = slider.value;
+            tauchuteSlider.addEventListener('input', function () {
+                let tauchute = tauchuteSlider.value;
+                let kchute = kchuteSlider.value;
                 tauchuteValue.textContent = tauchute;
-                updateGraph(tauchute);
+                updateGraph(tauchute, kchute);
+            });
+
+            kchuteSlider.addEventListener('input', function () {
+                let tauchute = tauchuteSlider.value;
+                let kchute = parseFloat(kchuteSlider.value).toFixed(1);
+                kchuteValue.textContent = kchute;
+                updateGraph(tauchute, kchute);
             });
         });
     </script>

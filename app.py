@@ -26,10 +26,10 @@ def read_sensor_data():
 def index():
     return render_template('index.html')
 
-@app.route('/update_graph/<int:tauchute>')
-def update_graph(tauchute):
+@app.route('/update_graph/<int:tauchute>/<string:kchute>')
+def update_graph(tauchute, kchute):
 
-    KCHUTE = 38.7
+    KCHUTE = float(kchute)
     TAUCHUTE = tauchute
 
     y1 = 30.5
