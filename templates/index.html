@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curvas Interativas</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <h2>Curvas Interativas</h2>
+    <div id="graph"></div>
+    <input type="range" id="tauchuteSlider" min="2700" max="10000" value="4500" step="100">
+    <p>Valor de TAUCHUTE: <span id="tauchuteValue">4500</span></p>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let slider = document.getElementById('tauchuteSlider');
+            let tauchuteValue = document.getElementById('tauchuteValue');
+            let graphDiv = document.getElementById('graph');
+
+            function updateGraph(tauchute) {
+                fetch(`/update_graph/${tauchute}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        let graphJSON = JSON.parse(data);
+                        Plotly.newPlot(graphDiv, graphJSON.data, graphJSON.layout);
+                    });
+            }
+
+            updateGraph(slider.value);
+            
+            slider.addEventListener('input', function () {
+                let tauchute = slider.value;
+                tauchuteValue.textContent = tauchute;
+                updateGraph(tauchute);
+            });
+        });
+    </script>
+</body>
+</html>
